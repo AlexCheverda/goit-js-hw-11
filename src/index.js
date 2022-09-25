@@ -10,7 +10,7 @@ const refs = {
     formEl: document.querySelector('#search-form'),
     inputEl: document.querySelector('input'),
     galleryEl: document.querySelector('.gallery'),
-    sentEl: document.querySelector('#sent'),
+    sentEl: document.querySelector('#sentinel'),
 }
 
 const { formEl, inputEl, galleryEl, sentEl } = refs;
@@ -19,7 +19,7 @@ let inputValue = '';
 let userSearch = '';
 let totalHits = 0;
 let page = 0;
-let hitsArr = [];
+let itemArr = [];
 
 inputEl.addEventListener('input', onInput);
 function onInput(evt) {
@@ -45,8 +45,8 @@ function onSubmit(evt) {
                 renderPhotoMarkup(search);
                 scrollStart();
             }
-            hitsArr = search.data.hits;
-            if (!hitsArr.length) {
+            itemArr = search.data.hits;
+            if (!itemArr.length) {
                 return Notiflix.Notify.failure(
                     'Sorry, there are no images matching your search query. Please try again.'
                 );
@@ -62,8 +62,8 @@ function deletePhotoMarkup() {
 }
 
 function renderPhotoMarkup(search) {
-    hitsArr = search.data.hits;
-    const markupCard = hitsArr.map(hit =>
+    itemArr = search.data.hits;
+    const markupCard = itemArr.map(hit =>
                 `
                 <a class="photo-link" href="${hit.largeImageURL}">
                     <img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy" width=300 height=200 />
@@ -95,8 +95,10 @@ const galleryLightbox = new SimpleLightbox('.gallery a', {
     captionDelay: 250,
 });
 
+/* INFINITY SCROLL - INTERSECTION OBSERVER */
+
 const onEntry = entries => {
-    entries.forEach(enry => {
+    entries.forEach(entry => {
         if (entry.isIntersecting && userSearch !== '') {
             page += 1;
             let numberPages = totalHits / 40;
@@ -116,7 +118,7 @@ const onEntry = entries => {
 };
 
 const options = {
-    footMargin: '200px',
+    rootMargin: '250px',
 };
 const observer = new IntersectionObserver(onEntry, options);
 observer.observe(sentEl);
